@@ -1,0 +1,152 @@
+
+#include <iostream>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <bitset>
+
+using namespace std;
+
+void usuario(string adm[20][3] );
+void uno(string adm[20][3]);
+void dos(string adm[20][3]);
+void trans(string a);
+void encriptar(string a,string &bl);
+
+int main()
+{   
+    string l;
+    cout << "Ingrese clave : " <<  endl;
+    cin>>l;
+    string bl;
+    encriptar(l, bl);
+    
+    ifstream inputFile("sudo.txt");
+    string bin;
+    char c; 
+     
+    while (inputFile.get(c)) {
+        bin+=c;
+    }
+    
+    
+    if(bl==bin){
+        string adm[20][3]; 
+        usuario(adm);
+        int opc;
+        do{
+            
+            cout << "Seleccione una opcion:" << endl;
+            cout << "1. Consultar saldo" << endl;
+            cout << "2. Retirar dinero" << endl;
+            cin >> opc;
+            
+            if(opc==1){
+                uno(adm);
+            }
+            else if(opc==2){
+                dos(adm);
+            }
+        }while(opc!=3);
+    }
+    return 0;
+}
+
+void uno(string adm[20][3]){
+    
+    fstream outputFile("usuarios.txt", ios::in | ios::out | ios::trunc);
+
+    // Verificar si el archivo se abrió correctamente
+    if (!outputFile) {
+        cout << "Error al abrir el archivo" << endl;
+        
+    }
+    adm[0][2] =to_string(stoi(adm[0][2]) - 1000);
+    cout << "Su saldo es :" ;
+    cout <<adm[0][2]<< endl; 
+    outputFile << adm[0][0]<< " " << adm[0][1] << " " << adm[0][2]<< endl;
+            
+  
+    outputFile.close();
+
+}
+void dos(string adm[20][3]){
+    
+    fstream outputFile("usuarios.txt", ios::in | ios::out | ios::trunc);
+
+    // Verificar si el archivo se abrió correctamente
+    if (!outputFile) {
+        cout << "Error al abrir el archivo" << endl;
+        
+    }
+   
+    cout << "Ingresar cantidad que desea retirar :  " ;
+    string a="";
+    cin>>a;
+    
+    int y=stoi(a);
+    adm[0][2] =to_string(stoi(adm[0][2]) - 1000 - y);
+    cout << "Saldo restante :  " ;
+    cout <<adm[0][2]<< endl;
+    outputFile << adm[0][0]<< " " << adm[0][1] << " " << adm[0][2]<< endl;
+    outputFile.close();
+    trans(a);
+}
+void trans(string a){
+    ofstream outputFile("transac.txt", ios::in | ios::out | ios::app);
+    if (!outputFile) {
+        cout << "Error al abrir el archivo" << endl;
+        
+    }
+    string bl="";
+    encriptar(a, bl);
+    bl += "\n";
+    outputFile.write(bl.c_str(), bl.size());
+    outputFile.close();
+    
+}
+
+void encriptar(string a,string &bl){
+    string bin;
+    for (char c : a) {
+        bitset<8> b(c);
+        bin += b.to_string();
+    }
+    int n=4;
+  
+    for (int j = 0; j+n<= (bin.length()); j += n){  
+        string blo = bin.substr(j, n); //crear la primera subcadena
+    
+        for(int i=0;i<n;i++){
+            if(i==0){
+                bl+=blo[n-1];
+            }
+            else{
+               bl+=blo[i-1]; 
+            }  
+        } 
+        
+    }
+}
+void usuario(string adm[20][3]){
+   ofstream outputFile("usuarios.txt", ios::in | ios::out | ios::trunc); // modo escritura
+
+    if (!outputFile) {
+        cout << "Error al crear archivo de salida" << endl;
+        
+    }
+
+    string cedula, clave, saldo;
+    cout << "Ingrese los datos del usuario: " <<  endl;
+    cout << "Cedula: ";
+    cin>>adm[0][0];
+    cout << "Clave: ";
+    cin>>adm[0][1];
+    cout << "Saldo: ";
+    cin>> adm[0][2];
+   
+    // Escribir los datos en el archivo separados por comas
+    cout << adm[0][0]<< " " << adm[0][1] << " " << adm[0][2]<< endl;
+    outputFile<< adm[0][0]<< " " << adm[0][1] << " " << adm[0][2]<< endl;
+    outputFile.close(); 
+}
