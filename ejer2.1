@@ -1,0 +1,182 @@
+#include <iostream>
+#include <fstream>
+#include <bitset>
+
+using namespace std;
+
+
+void metodo1(int a,int s);
+void metodo2(int a, int s);
+void prime(char* codi, int s);
+
+
+int main() {
+    
+    ifstream inputFile("binario.txt");  // modo lectura
+    if (!inputFile) {
+        cout << "Error al abrir archivo" << endl;  
+    }
+    
+    char c; 
+    
+    while (inputFile.get(c)) {
+        c++;
+    }
+   
+    int n=0,s=0;
+    cout<<"Ingresa  semilla ";
+    cin>>s;
+    inputFile.close();
+    
+    cout<<"Ingresa el metodo de decodificacion 1 o 2: ";
+    cin>>n;
+    if (n==1){
+       metodo1(c,s);
+    }
+    else if (n==2){
+        metodo1( c,s);
+    }
+    
+    
+    
+ 
+    
+    return 0;
+
+}
+
+
+void prime(char* codi, int i){ 
+    if (codi[i]=='0'){
+            codi[i]='1';
+            
+        }
+    else if(codi[i]=='1'){
+            codi[i]='0';
+        }
+}
+
+void metodo1( int a, int s) {
+  
+    ifstream inputFile("binario.txt");  // modo lectura
+    
+    if (!inputFile) {
+        cout << "Error al abrir archivo binario" << endl;  
+    }
+    
+    ofstream outputFile("metodo1.txt"); // modo escritura
+    
+    if (!outputFile) {
+        cout << "Error al crear archivo de salida" << endl;
+    }
+    
+    int b=0,j=0;
+    
+    char c,cod[a];
+    
+    while (inputFile.get(c)) { //bits en arreglo
+         cod[b]=c;
+    }
+    inputFile.close();
+    char codi1[s],codi[s];
+    int num0=0,num1=0;
+    while(j<a-s){
+        num0=0;
+        num1=0;
+        for(int i=0;i<s;i++){ //copia
+            codi[i]=cod[i];
+            if(codi[i]=='0'){
+                num0++;
+            }
+            else if(codi[i]=='1'){
+                num1++;
+            }
+        }
+        for(int i=0;i<s;i++){ //copia
+            codi1[i]=cod[j];
+            j++;
+        }
+         
+        j-=s; 
+        
+        if (j<=s){
+           for (int i=0;i<s;i++){
+            prime(codi, i);
+            } 
+            outputFile.write(codi, s);
+            int t=num0;
+            num0=num1;
+            num1=t;
+        }
+        
+        if(num0==num1){
+            for (int i=0;i<s;i++){
+                prime(codi1, i);
+            }
+             outputFile.write(codi1, s);    
+            
+        }
+        else if(num0>num1){
+            for (int i = 1; i < s; i+=2) {
+                prime(codi1,i);   
+            }
+            outputFile.write(codi1, s);
+            
+        }
+        
+        else if (num1>num0){
+            for (int i = 2; i < s; i+=3) {
+                prime(codi1,i);    
+            }
+            outputFile.write(codi1, s);
+            
+        }
+        
+            
+       
+    }
+   
+    outputFile.close();
+}
+
+void metodo2( int f,int s) {
+  
+    ifstream inputFile("binario.txt");  // modo lectura
+    
+    if (!inputFile) {
+        cout << "Error al abrir archivo binario" << endl;  
+    }
+    
+    ofstream outputFile("metodo2.txt"); // modo escritura
+    
+    if (!outputFile) {
+        cout << "Error al crear archivo de salida" << endl;
+    }
+    int a=0,j=0;
+    
+    char c,cod[f]; 
+    
+    while (inputFile.get(c)) { //bits en arreglo
+         cod[a]=c;
+         a++;
+    }
+    inputFile.close();
+    char codi1[s],codi[s];
+    while(j<a){
+        for(int i=0;i<s;i++){ //copia
+            codi[i]=cod[j];
+            j++;
+            cout<<codi[i];
+        }
+        for(int i=0;i<s;i++){
+            if(i!=0){
+                codi1[i]=codi[s+1];
+            }
+            else{
+               codi1[i]=codi[0]; 
+            }
+            
+        }
+        outputFile.write(codi1, s);
+    }
+}
